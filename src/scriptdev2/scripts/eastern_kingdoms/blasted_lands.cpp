@@ -39,6 +39,8 @@ EndContentData */
 #define GOSSIP_ITEM_FALLEN4 "You can count on me, Hero"
 #define GOSSIP_ITEM_FALLEN5 "I shall"
 
+#define GOSSIP_ITEM_FEL_SALVE "Ich habe meine Azsharitwaffe verloren."
+
 bool GossipHello_npc_fallen_hero_of_horde(Player* pPlayer, Creature* pCreature)
 {
     if (pCreature->isQuestGiver())
@@ -52,6 +54,9 @@ bool GossipHello_npc_fallen_hero_of_horde(Player* pPlayer, Creature* pCreature)
 
     if (pPlayer->GetQuestStatus(2801) == QUEST_STATUS_INCOMPLETE && pPlayer->GetTeam() == ALLIANCE)
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Why are you here?", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+	
+	if (pPlayer->GetQuestStatus(3626) == QUEST_STATUS_COMPLETE && !pPlayer->GetQuestRewardStatus(3626))  // außerdem müsste geprüft werden, ob item 10697 oder 10698 oder 10696 fehlt
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_FEL_SALVE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
 
     pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetObjectGuid());
 
@@ -105,6 +110,10 @@ bool GossipSelect_npc_fallen_hero_of_horde(Player* pPlayer, Creature* pCreature,
             pPlayer->CLOSE_GOSSIP_MENU();
             pPlayer->AreaExploredOrEventHappens(2801);
             break;
+		case GOSSIP_ACTION_INFO_DEF+3:
+		    pPlayer->CLOSE_GOSSIP_MENU();
+			pCreature->CastSpell(pPlayer, 15247, true);
+			break;
     }
     return true;
 }
